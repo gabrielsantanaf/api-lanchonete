@@ -243,3 +243,15 @@ class LanchoneteService:
             Dict raw do pedido ou None se não encontrado.
         """
         return await self.pedido_repo.get_raw(cod_pedido)
+
+    async def tornar_pedido_prioritario(self, cod_pedido: int) -> bool:
+        raw = await self.pedido_repo.get_raw(cod_pedido)
+        if raw is None:
+            return False
+        if raw["esta_cancelado"] or raw["estaEntregue"]:
+            return False
+        await self.pedido_repo.set_prioritario(cod_pedido)
+        return True
+
+    async def listar_fila_preparo(self) -> list[dict]:
+        return await self.pedido_repo.listar_fila_preparo()

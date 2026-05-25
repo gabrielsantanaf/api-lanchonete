@@ -62,6 +62,7 @@ class PedidoRepoTortoise:
             "qtd_max_produtos": pedido.qtd_max_produtos,
             "estaEntregue": pedido.estaEntregue,
             "esta_cancelado": pedido.esta_cancelado,
+            "prioritario": pedido.prioritario,
             "observacao": pedido.observacao,
             "itens": [i.produto_codigo for i in itens],
         }
@@ -125,7 +126,27 @@ class PedidoRepoTortoise:
                 "qtd_max_produtos": pedido.qtd_max_produtos,
                 "estaEntregue": pedido.estaEntregue,
                 "esta_cancelado": pedido.esta_cancelado,
+                "prioritario": pedido.prioritario,
                 "observacao": pedido.observacao,
                 "itens": [i.produto_codigo for i in itens],
             })
         return result
+
+    async def set_prioritario(self, pedido_codigo: int) -> None:
+        await PedidoModel.filter(codigo=int(pedido_codigo)).update(prioritario=True)
+
+    async def listar_fila_preparo(self) -> list[dict]:
+        pedidos = (
+            await PedidoModel.filter(esta_cancelado=False, estaEntregue=False)
+            .order_by("-prioritario")
+            .all()
+        )
+        return [
+            {
+                "codigo": p.codigo,
+                "cpf_cliente": p.cpf_cliente,
+                "prioritario": p.prioritario,
+                "observacao": p.observacao,
+            }
+            for p in pedidos
+        ]

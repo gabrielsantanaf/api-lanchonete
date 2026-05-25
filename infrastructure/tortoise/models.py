@@ -59,6 +59,7 @@ class PedidoModel(Model):
     qtd_max_produtos = fields.IntField()
     estaEntregue = fields.BooleanField(default=False)
     esta_cancelado = fields.BooleanField(default=False)
+    prioritario = fields.BooleanField(default=False)
     observacao = fields.CharField(max_length=200, default="")
 
 
